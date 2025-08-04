@@ -150,12 +150,6 @@
             font-size: 1.3rem;
         }
 
-        .color-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
         .result-section {
             display: none;
             text-align: center;
@@ -198,6 +192,7 @@
             padding: 15px;
             margin: 20px 0;
             border-radius: 5px;
+            display: none;
         }
 
         .url-info h4 {
@@ -249,6 +244,7 @@
             padding: 20px;
             border: 1px solid #ddd;
             background-color: #fafafa;
+            display: none;
         }
 
         .preview-section h4 {
@@ -271,13 +267,6 @@
             margin: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
-        }
-
-        #generatedUrl,
-        #previewContent,
-        .url-info,
-        .preview-section {
-            display: none;
         }
 
         /* Estilos para la página de información */
@@ -380,6 +369,10 @@
             font-weight: bold;
         }
 
+        .back-button:hover {
+            background-color: #333;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -394,10 +387,6 @@
                 padding: 20px;
                 width: 95%;
                 max-height: 95vh;
-            }
-
-            .color-group {
-                grid-template-columns: 1fr;
             }
             
             .contact-card {
@@ -432,12 +421,12 @@
             
             <canvas id="qrCanvas"></canvas>
 
-            <div class="url-info">
+            <div class="url-info" id="urlInfo">
                 <h4>URL generada:</h4>
                 <div class="generated-url" id="generatedUrl"></div>
             </div>
             
-            <div class="preview-section">
+            <div class="preview-section" id="previewSection">
                 <h4>Contenido del QR:</h4>
                 <div class="preview-content" id="previewContent"></div>
             </div>
@@ -450,6 +439,13 @@
                     Probar Contenido
                 </button>
             </div>
+        </div>
+
+        <div class="disclaimer">
+            <p><strong>Nota:</strong> Este código QR contiene una URL que redirige a la información que has introducido. 
+            La información se transmite a través de parámetros de URL.</p>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div id="dataModal" class="modal">
@@ -457,7 +453,6 @@
             <button class="close" onclick="closeModal()">&times;</button>
             
             <form id="qrForm">
-
                 <div class="form-group">
                     <label for="title">Título</label>
                     <input type="text" id="title" placeholder="Mi Contenido Personalizado">
@@ -495,15 +490,15 @@
                     <div id="logoPreview"></div>
                 </div>
 
-                    <div class="form-group">
-                        <label for="qrSize">Tamaño del QR</label>
-                        <select id="qrSize">
-                            <option value="250">250x250px</option>
-                            <option value="300" selected>300x300px</option>
-                            <option value="400">400x400px</option>
-                            <option value="500">500x500px</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="qrSize">Tamaño del QR</label>
+                    <select id="qrSize">
+                        <option value="250">250x250px</option>
+                        <option value="300" selected>300x300px</option>
+                        <option value="400">400x400px</option>
+                        <option value="500">500x500px</option>
+                    </select>
+                </div>
 
                 <button type="button" class="main-button" onclick="generateQR()">
                     Generar QR
@@ -520,21 +515,21 @@
             </div>
             
             <div class="contact-info">
-                <div class="contact-item">
+                <div class="contact-item" id="contactNameItem" style="display: none;">
                     <i class="fas fa-user"></i>
                     <div>
                         <strong>Nombre:</strong> <span id="contactName"></span>
                     </div>
                 </div>
                 
-                <div class="contact-item">
+                <div class="contact-item" id="contactEmailItem" style="display: none;">
                     <i class="fas fa-envelope"></i>
                     <div>
                         <strong>Email:</strong> <span id="contactEmail"></span>
                     </div>
                 </div>
                 
-                <div class="contact-item">
+                <div class="contact-item" id="contactPhoneItem" style="display: none;">
                     <i class="fas fa-phone"></i>
                     <div>
                         <strong>Teléfono:</strong> <span id="contactPhone"></span>
@@ -542,10 +537,10 @@
                 </div>
             </div>
             
-            <div class="contact-message">
+            <div class="contact-message" id="contactMessageSection" style="display: none;">
                 <h3>Mensaje</h3>
-                <p><strong>Español:</strong> <span id="contactPhrase1"></span></p>
-                <p><strong>English:</strong> <span id="contactPhrase2"></span></p>
+                <p id="contactPhrase1Section" style="display: none;"><strong>Español:</strong> <span id="contactPhrase1"></span></p>
+                <p id="contactPhrase2Section" style="display: none;"><strong>English:</strong> <span id="contactPhrase2"></span></p>
             </div>
             
             <a href="#" class="back-button" onclick="showGenerator()">
@@ -703,8 +698,6 @@
             const phrase2 = document.getElementById('phrase2').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
-            const bgColor = document.getElementById('bgColor').value;
-            const fgColor = document.getElementById('fgColor').value;
             const qrSize = parseInt(document.getElementById('qrSize').value);
 
             // Mostrar loading
@@ -737,8 +730,8 @@
                     height: qrSize,
                     margin: 2,
                     color: {
-                        dark: fgColor,
-                        light: bgColor
+                        dark: '#000000',
+                        light: '#ffffff'
                     },
                     errorCorrectionLevel: 'H'
                 };
@@ -764,30 +757,56 @@
         }
 
         function displayContactData(data) {
-            function setOrHide(id, value) {
-                const el = document.getElementById(id);
-                if (value) {
-                    el.textContent = value;
-                    el.style.display = ''; // lo muestra (por si estaba oculto)
-                } else {
-                    el.style.display = 'none'; // lo oculta si no hay valor
-                }
+            // Mostrar título
+            if (data.title) {
+                document.getElementById('contactTitle').textContent = data.title;
             }
-        
-            setOrHide('contactTitle', data.title);
-            setOrHide('contactName', data.fullName);
-            setOrHide('contactEmail', data.email);
-            setOrHide('contactPhone', data.phone);
-            setOrHide('contactPhrase1', data.phrase1);
-            setOrHide('contactPhrase2', data.phrase2);
+            
+            // Mostrar nombre
+            if (data.fullName) {
+                document.getElementById('contactName').textContent = data.fullName;
+                document.getElementById('contactNameItem').style.display = 'flex';
+            }
+            
+            // Mostrar email
+            if (data.email) {
+                document.getElementById('contactEmail').textContent = data.email;
+                document.getElementById('contactEmailItem').style.display = 'flex';
+            }
+            
+            // Mostrar teléfono
+            if (data.phone) {
+                document.getElementById('contactPhone').textContent = data.phone;
+                document.getElementById('contactPhoneItem').style.display = 'flex';
+            }
+            
+            // Mostrar mensajes si existen
+            let hasMessages = false;
+            if (data.phrase1) {
+                document.getElementById('contactPhrase1').textContent = data.phrase1;
+                document.getElementById('contactPhrase1Section').style.display = 'block';
+                hasMessages = true;
+            }
+            
+            if (data.phrase2) {
+                document.getElementById('contactPhrase2').textContent = data.phrase2;
+                document.getElementById('contactPhrase2Section').style.display = 'block';
+                hasMessages = true;
+            }
+            
+            if (hasMessages) {
+                document.getElementById('contactMessageSection').style.display = 'block';
+            }
         }
 
         function displayResults() {
             // Mostrar contenido generado
             document.getElementById('generatedUrl').textContent = qrUrl;
+            document.getElementById('urlInfo').style.display = 'block';
             
             // Mostrar preview del contenido
             document.getElementById('previewContent').textContent = qrContent;
+            document.getElementById('previewSection').style.display = 'block';
             
             showResult();
         }
