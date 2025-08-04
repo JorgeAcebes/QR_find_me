@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de QR Inteligente</title>
+    <title>Generador de QR Personal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -407,12 +407,12 @@
 <body>
     <div class="container" id="generatorPage">
         <div class="header">
-            <h1>Generador de QR Inteligente</h1>
+            <h1>Generador de QR Personalizado</h1>
             <p>Crea códigos QR con logo incrustado que contienen información personalizada</p>
         </div>
 
         <button class="main-button" onclick="openModal()">
-            Crear QR Personalizado
+            Editar información
         </button>
 
         <div class="loading" id="loading">
@@ -423,12 +423,6 @@
         <div class="result-section" id="resultSection">
             <h3>Tu código QR está listo</h3>
             
-            <div class="url-info">
-                <h4>Contenido del QR:</h4>
-                <div class="generated-url" id="generatedUrl"></div>
-                <p><small>Este QR puede ser escaneado desde cualquier teléfono móvil</small></p>
-            </div>
-
             <canvas id="qrCanvas"></canvas>
             
             <div>
@@ -440,51 +434,23 @@
                 </button>
             </div>
 
-            <div class="preview-section">
-                <h4>Vista previa del contenido:</h4>
-                <div class="preview-content" id="previewContent"></div>
-            </div>
-        </div>
-
-        <div class="disclaimer">
-            <strong>Tecnología:</strong> El QR contiene un enlace único que muestra tu información personalizada al ser escaneado.
-        </div>
-    </div>
-
     <!-- Modal -->
     <div id="dataModal" class="modal">
         <div class="modal-content">
             <button class="close" onclick="closeModal()">&times;</button>
-            <h2>Configurar tu QR personalizado</h2>
             
             <form id="qrForm">
-                <div class="form-group">
-                    <label for="logo">Logo para incrustar en el QR - Opcional</label>
-                    <input type="file" id="logo" accept="image/*">
-                    <small>Esta imagen se incrustará en el centro del código QR</small>
-                    <div id="logoPreview"></div>
-                </div>
 
                 <div class="form-group">
                     <label for="title">Título</label>
-                    <input type="text" id="title" placeholder="Mi Contenido Personalizado" required>
+                    <input type="text" id="title" placeholder="Mi Contenido Personalizado">
                 </div>
 
                 <div class="form-group">
                     <label for="fullName">Nombre y apellidos</label>
-                    <input type="text" id="fullName" placeholder="Juan Pérez">
+                    <input type="text" id="fullName" placeholder="Mi nombre">
                 </div>
-
-                <div class="form-group">
-                    <label for="phrase1">Mensaje en español</label>
-                    <textarea id="phrase1" placeholder="Si encuentras esto, por favor, haz una buena acción"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="phrase2">Mensaje en inglés</label>
-                    <textarea id="phrase2" placeholder="If you find this, please, do the right thing"></textarea>
-                </div>
-
+                
                 <div class="form-group">
                     <label for="email">Correo electrónico</label>
                     <input type="email" id="email" placeholder="ejemplo@correo.com">
@@ -494,26 +460,23 @@
                     <label for="phone">Número de teléfono</label>
                     <input type="tel" id="phone" placeholder="+34 600 000 000">
                 </div>
-
+                
                 <div class="form-group">
-                    <label for="description">Descripción adicional</label>
-                    <textarea id="description" placeholder="Información adicional sobre la imagen o el propósito"></textarea>
+                    <label for="phrase1">Mensaje en español</label>
+                    <textarea id="phrase1" placeholder="Por favor, contacta conmigo"></textarea>
                 </div>
 
-                <div class="form-section">
-                    <h3>Configuración de diseño del QR</h3>
-                    
-                    <div class="color-group">
-                        <div class="form-group">
-                            <label for="bgColor">Color del fondo</label>
-                            <input type="color" id="bgColor" value="#ffffff">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fgColor">Color del QR</label>
-                            <input type="color" id="fgColor" value="#000000">
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="phrase2">Mensaje en inglés</label>
+                    <textarea id="phrase2" placeholder="Please, contact me"></textarea>
+                </div>
+               
+                <div class="form-group">
+                    <label for="logo">Logo para incrustar en el QR</label>
+                    <input type="file" id="logo" accept="image/*">
+                    <small>Esta imagen se incrustará en el centro del código QR</small>
+                    <div id="logoPreview"></div>
+                </div>
 
                     <div class="form-group">
                         <label for="qrSize">Tamaño del QR</label>
@@ -524,7 +487,6 @@
                             <option value="500">500x500px</option>
                         </select>
                     </div>
-                </div>
 
                 <button type="button" class="main-button" onclick="generateQR()">
                     Generar QR
@@ -542,7 +504,6 @@
             </div>
             
             <div class="contact-info">
-                <h3>Información de Contacto</h3>
                 <div class="contact-item">
                     <i class="fas fa-user"></i>
                     <div>
@@ -734,11 +695,6 @@
             const fgColor = document.getElementById('fgColor').value;
             const qrSize = parseInt(document.getElementById('qrSize').value);
 
-            if (!title) {
-                alert('Por favor, introduce al menos un título');
-                return;
-            }
-
             // Mostrar loading
             document.getElementById('loading').style.display = 'block';
             closeModal();
@@ -797,13 +753,23 @@
         }
 
         function displayContactData(data) {
-            document.getElementById('contactTitle').textContent = data.title || 'Sin título';
-            document.getElementById('contactDescription').textContent = data.description || 'Sin descripción';
-            document.getElementById('contactName').textContent = data.fullName || 'No proporcionado';
-            document.getElementById('contactEmail').textContent = data.email || 'No proporcionado';
-            document.getElementById('contactPhone').textContent = data.phone || 'No proporcionado';
-            document.getElementById('contactPhrase1').textContent = data.phrase1 || 'No proporcionado';
-            document.getElementById('contactPhrase2').textContent = data.phrase2 || 'No proporcionado';
+            function setOrHide(id, value) {
+                const el = document.getElementById(id);
+                if (value) {
+                    el.textContent = value;
+                    el.style.display = ''; // lo muestra (por si estaba oculto)
+                } else {
+                    el.style.display = 'none'; // lo oculta si no hay valor
+                }
+            }
+        
+            setOrHide('contactTitle', data.title);
+            setOrHide('contactDescription', data.description);
+            setOrHide('contactName', data.fullName);
+            setOrHide('contactEmail', data.email);
+            setOrHide('contactPhone', data.phone);
+            setOrHide('contactPhrase1', data.phrase1);
+            setOrHide('contactPhrase2', data.phrase2);
         }
 
         function displayResults() {
