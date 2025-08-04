@@ -273,6 +273,13 @@
             border-radius: 5px;
         }
 
+        #generatedUrl,
+        #previewContent,
+        .url-info,
+        .preview-section {
+            display: none;
+        }
+
         /* Estilos para la página de información */
         #contactPage {
             display: none;
@@ -424,6 +431,16 @@
             <h3>Tu código QR está listo</h3>
             
             <canvas id="qrCanvas"></canvas>
+
+            <div class="url-info">
+                <h4>URL generada:</h4>
+                <div class="generated-url" id="generatedUrl"></div>
+            </div>
+            
+            <div class="preview-section">
+                <h4>Contenido del QR:</h4>
+                <div class="preview-content" id="previewContent"></div>
+            </div>
             
             <div>
                 <button class="download-button" onclick="downloadQR()">
@@ -500,7 +517,6 @@
         <div class="contact-card">
             <div class="contact-header">
                 <h2 id="contactTitle"></h2>
-                <p id="contactDescription"></p>
             </div>
             
             <div class="contact-info">
@@ -637,10 +653,7 @@
             if (data.phrase2) {
                 content += `English: ${data.phrase2}\n`;
             }
-            
-            if (data.description) {
-                content += `\nDescripción: ${data.description}\n`;
-            }
+        
             
             if (data.email || data.phone) {
                 content += `\n--- Contacto ---\n`;
@@ -690,7 +703,6 @@
             const phrase2 = document.getElementById('phrase2').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
-            const description = document.getElementById('description').value.trim();
             const bgColor = document.getElementById('bgColor').value;
             const fgColor = document.getElementById('fgColor').value;
             const qrSize = parseInt(document.getElementById('qrSize').value);
@@ -708,7 +720,6 @@
                     phrase2,
                     email,
                     phone,
-                    description
                 };
 
                 // Crear contenido del QR
@@ -764,7 +775,6 @@
             }
         
             setOrHide('contactTitle', data.title);
-            setOrHide('contactDescription', data.description);
             setOrHide('contactName', data.fullName);
             setOrHide('contactEmail', data.email);
             setOrHide('contactPhone', data.phone);
