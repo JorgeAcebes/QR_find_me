@@ -406,7 +406,14 @@
             <div class="loading-spinner"></div>
             <p>Generando código QR...</p>
         </div>
-
+          <div>
+                <button class="download-button" onclick="downloadQR()">
+                    Descargar QR (PNG)
+                </button>
+                <button class="download-button" onclick="testQR()" style="background-color: #1a73e8;">
+                    Probar Contenido
+                </button>
+            </div>
         <div class="result-section" id="resultSection">
             <h3>Tu código QR está listo</h3>
             
@@ -422,14 +429,6 @@
                 <div class="preview-content" id="previewContent"></div>
             </div>
             
-            <div>
-                <button class="download-button" onclick="downloadQR()">
-                    Descargar QR (PNG)
-                </button>
-                <button class="download-button" onclick="testQR()" style="background-color: #1a73e8;">
-                    Probar Contenido
-                </button>
-            </div>
         </div>
     </div>
 
