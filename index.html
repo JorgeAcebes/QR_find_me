@@ -406,7 +406,12 @@
             <div class="loading-spinner"></div>
             <p>Generando código QR...</p>
         </div>
-          <div>
+        
+        <div class="result-section" id="resultSection">
+            <h3>Tu código QR está listo</h3>
+            
+            <canvas id="qrCanvas"></canvas>
+  <div>
                 <button class="download-button" onclick="downloadQR()">
                     Descargar QR (PNG)
                 </button>
@@ -414,10 +419,6 @@
                     Probar Contenido
                 </button>
             </div>
-        <div class="result-section" id="resultSection">
-            <h3>Tu código QR está listo</h3>
-            
-            <canvas id="qrCanvas"></canvas>
 
             <div class="url-info" id="urlInfo">
                 <h4>URL generada:</h4>
