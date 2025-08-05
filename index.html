@@ -585,7 +585,6 @@
             </div>
             
             <div class="contact-message" id="contactMessageSection" style="display: none;">
-                <h3>Mensaje</h3>
                 <p id="contactPhrase1Section" style="display: none;"><strong>Español:</strong> <span id="contactPhrase1"></span></p>
                 <p id="contactPhrase2Section" style="display: none;"><strong>English:</strong> <span id="contactPhrase2"></span></p>
             </div>
@@ -924,16 +923,16 @@
             let width, height;
             switch(deviceType) {
                 case 'mobile':
-                    width = 1080;
+                    width = 1440;
                     height = 1920;
                     break;
                 case 'tablet':
-                    width = 1536;
-                    height = 2048;
+                    width = 2880;
+                    height = 1800;
                     break;
                 case 'desktop':
-                    width = 1920;
-                    height = 1080;
+                    width = 3840 ;
+                    height = 2400;
                     break;
                 default:
                     width = 1080;
@@ -956,7 +955,7 @@
                 // Calcular tamaño y posición del QR en el centro
                 const qrSize = Math.min(width, height) * 0.6; // 60% del tamaño más pequeño
                 const x = (width - qrSize) / 2;
-                const y = (height - qrSize) / 2;
+                const y = (height - qrSize) / 3;
                 
                 // Dibujar el QR
                 ctx.drawImage(qrImg, x, y, qrSize, qrSize);
