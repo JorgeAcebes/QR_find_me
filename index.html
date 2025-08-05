@@ -364,6 +364,44 @@
             background-color: #333;
         }
 
+        /* Modal para seleccionar dispositivo */
+        .device-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .device-modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 30px;
+            border: 2px solid #000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .device-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #000;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .device-option:hover {
+            background-color: #333;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -411,12 +449,15 @@
             <h3>Tu código QR está listo</h3>
             
             <canvas id="qrCanvas"></canvas>
-  <div>
+            <div>
                 <button class="download-button" onclick="downloadQR()">
                     Descargar QR (PNG)
                 </button>
                 <button class="download-button" onclick="testQR()" style="background-color: #1a73e8;">
                     Probar Contenido
+                </button>
+                <button class="download-button" onclick="openDeviceModal()" style="background-color: #4CAF50;">
+                    Generar fondo de pantalla
                 </button>
             </div>
 
@@ -429,11 +470,10 @@
                 <h4>Contenido del QR:</h4>
                 <div class="preview-content" id="previewContent"></div>
             </div>
-            
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal para editar información -->
     <div id="dataModal" class="modal">
         <div class="modal-content">
             <button class="close" onclick="closeModal()">&times;</button>
@@ -490,6 +530,27 @@
                     Generar QR
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal para seleccionar dispositivo -->
+    <div id="deviceModal" class="device-modal">
+        <div class="device-modal-content">
+            <button class="close" onclick="closeDeviceModal()">&times;</button>
+            <h3>Selecciona el dispositivo</h3>
+            <p>Elige el tipo de dispositivo para generar el fondo de pantalla con las dimensiones adecuadas:</p>
+            
+            <button class="device-option" onclick="generateWallpaper('mobile')">
+                Móvil
+            </button>
+            
+            <button class="device-option" onclick="generateWallpaper('tablet')">
+                Tablet
+            </button>
+            
+            <button class="device-option" onclick="generateWallpaper('desktop')">
+                Ordenador
+            </button>
         </div>
     </div>
 
@@ -589,10 +650,27 @@
             document.getElementById('dataModal').style.display = 'none';
         }
 
+        function openDeviceModal() {
+            if (!currentQRDataURL) {
+                alert('Primero genera un código QR');
+                return;
+            }
+            document.getElementById('deviceModal').style.display = 'block';
+        }
+
+        function closeDeviceModal() {
+            document.getElementById('deviceModal').style.display = 'none';
+        }
+
         window.onclick = function(event) {
             const modal = document.getElementById('dataModal');
             if (event.target === modal) {
                 closeModal();
+            }
+            
+            const deviceModal = document.getElementById('deviceModal');
+            if (event.target === deviceModal) {
+                closeDeviceModal();
             }
         }
 
@@ -834,6 +912,68 @@
             } else {
                 alert('Primero genera un código QR');
             }
+        }
+
+        function generateWallpaper(deviceType) {
+            if (!currentQRDataURL) {
+                alert('Primero genera un código QR');
+                return;
+            }
+
+            // Definir dimensiones según el tipo de dispositivo
+            let width, height;
+            switch(deviceType) {
+                case 'mobile':
+                    width = 1080;
+                    height = 1920;
+                    break;
+                case 'tablet':
+                    width = 1536;
+                    height = 2048;
+                    break;
+                case 'desktop':
+                    width = 1920;
+                    height = 1080;
+                    break;
+                default:
+                    width = 1080;
+                    height = 1920;
+            }
+
+            // Crear un canvas para el fondo de pantalla
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // Rellenar con fondo negro
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+
+            // Cargar la imagen del QR
+            const qrImg = new Image();
+            qrImg.onload = function() {
+                // Calcular tamaño y posición del QR en el centro
+                const qrSize = Math.min(width, height) * 0.6; // 60% del tamaño más pequeño
+                const x = (width - qrSize) / 2;
+                const y = (height - qrSize) / 2;
+                
+                // Dibujar el QR
+                ctx.drawImage(qrImg, x, y, qrSize, qrSize);
+                
+                // Descargar la imagen
+                const link = document.createElement('a');
+                link.download = `fondo-qr-${deviceType}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Cerrar el modal
+                closeDeviceModal();
+            };
+            
+            qrImg.src = currentQRDataURL;
         }
     </script>
 </body>
